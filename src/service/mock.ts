@@ -1,4 +1,4 @@
-import type { Grid } from "./type";
+import type { Grid, Shape } from "./type";
 
 // const grid = Array.from({length: ROWS}).map(() => Array.from({length: COLS}).map(() => 0))
 export const grid: Grid = [
@@ -23,3 +23,10 @@ export const grid: Grid = [
   [0, 0, 1, 0, 0, 1, 1, 0, 0, 1,],
   [0, 1, 1, 1, 0, 1, 1, 0, 1, 1,],
 ];
+
+export const nextBrick: Shape = [
+  [0, 1, 0, 0],
+  [1, 1, 1, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+]

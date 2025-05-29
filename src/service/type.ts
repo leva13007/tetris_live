@@ -4,13 +4,15 @@ export type Point = {
   c: number;
 }
 
+export type Shape = [
+  [Cell, Cell, Cell, Cell],
+  [Cell, Cell, Cell, Cell],
+  [Cell, Cell, Cell, Cell],
+  [Cell, Cell, Cell, Cell],
+];
+
 type Rotate = {
-  shape: [
-    [Cell, Cell, Cell, Cell],
-    [Cell, Cell, Cell, Cell],
-    [Cell, Cell, Cell, Cell],
-    [Cell, Cell, Cell, Cell],
-  ];
+  shape: Shape;
   spawnOffset: Point;
 }
 
