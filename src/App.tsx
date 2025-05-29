@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { grid } from './service/mock';
 import { getMergedGrid, getRandomBrick } from './service';
@@ -9,6 +9,26 @@ function App() {
 
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
+
+  const moveDown = () => {
+    setCurrentBrick(prev => {
+      const r = prev.spawnOffset.r + 1;
+      return {
+        ...prev,
+        spawnOffset: {
+          ...prev.spawnOffset,
+          r,
+        }
+      }
+    })
+  }
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      moveDown();
+    }, 1000);
+    return () => clearInterval(timerId)
+  }, [])
 
   const mergedGrid = getMergedGrid(grid, currentBrick);
 
