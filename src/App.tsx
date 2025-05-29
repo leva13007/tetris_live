@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { grid } from './service/mock';
-import { getRandomBrick } from './service';
+import { getMergedGrid, getRandomBrick } from './service';
 import type { BrickIntance } from './service/type';
 
 function App() {
@@ -10,11 +10,13 @@ function App() {
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
 
+  const mergedGrid = getMergedGrid(grid, currentBrick);
+
   return (
     <main className='game'>
       <section className="game__grid game__grid-border">
         {
-          grid.map((row, i) => (
+          mergedGrid.map((row, i) => (
             <div key={i} className="grid__row">
               {
                 row.map((cell, j) => (

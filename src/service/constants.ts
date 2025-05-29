@@ -2,6 +2,7 @@ import type { Tetromino } from "./type";
 
 export const ROWS = 20;
 export const COLS = 10;
+export const SHAPE_SIZE = 4;
 
 export const TETROMINOES: Tetromino[] = [
   {
@@ -14,7 +15,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -23,7 +24,7 @@ export const TETROMINOES: Tetromino[] = [
           [1, 0, 0, 0],
           [1, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       }
     ]
   },
@@ -37,7 +38,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
     ],
   },
@@ -51,7 +52,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -60,7 +61,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -69,7 +70,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: -1, c: 3 },
       },
       {
         shape: [
@@ -78,7 +79,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
     ]
   },
@@ -92,7 +93,7 @@ export const TETROMINOES: Tetromino[] = [
           [1, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -101,7 +102,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -110,7 +111,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -119,7 +120,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 1, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: -1, c: 3 },
       },
     ]
   },
@@ -133,7 +134,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 1, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -142,7 +143,7 @@ export const TETROMINOES: Tetromino[] = [
           [1, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: -1, c: 3 },
       },
       {
         shape: [
@@ -151,7 +152,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -160,7 +161,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
     ]
   },
@@ -174,7 +175,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -183,7 +184,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 1, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
     ],
   },
@@ -197,7 +198,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
       {
         shape: [
@@ -206,7 +207,7 @@ export const TETROMINOES: Tetromino[] = [
           [0, 0, 1, 0],
           [0, 0, 0, 0],
         ],
-        spawnOffset: { r: 0, c: 0 },
+        spawnOffset: { r: 0, c: 3 },
       },
     ],
   },
