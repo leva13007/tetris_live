@@ -11,10 +11,12 @@ export type Shape = [
   [Cell, Cell, Cell, Cell],
 ];
 
-type Rotate = {
+export type Rotate = {
   shape: Shape;
   spawnOffset: Point;
 }
+
+export type BrickIntance = Rotate & {rotationIndex: number; name: string};
 
 export type Tetromino = {
   name: string;

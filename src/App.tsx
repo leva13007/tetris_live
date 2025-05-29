@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import './App.css';
-import { grid, nextBrick } from './service/mock';
+import { grid } from './service/mock';
+import { getRandomBrick } from './service';
+import type { BrickIntance } from './service/type';
 
 function App() {
   console.log("Render App", grid);
+
+  const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
+  const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
+
   return (
     <main className='game'>
       <section className="game__grid game__grid-border">
@@ -24,7 +30,7 @@ function App() {
           <h3 className="text-title">Next brick</h3>
           <div className="next-brick__gird game__grid">
             {
-              nextBrick.map((row, i) => (
+              nextBrick.shape.map((row, i) => (
                 <div key={i} className="grid__row">
                   {
                     row.map((cell, j) => (
