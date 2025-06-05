@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { grid } from './service/mock';
-import { getMergedGrid, getRandomBrick } from './service';
-import type { BrickIntance } from './service/type';
+import { getMergedGrid, getRandomBrick, hasCollision } from './service';
+import type { BrickIntance, Grid, Point, Shape } from './service/type';
 
 function App() {
   console.log("Render App", grid);
@@ -13,6 +13,9 @@ function App() {
   const moveDown = () => {
     setCurrentBrick(prev => {
       const r = prev.spawnOffset.r + 1;
+
+      if (hasCollision(grid, prev.shape, { r, c: prev.spawnOffset.c })) return prev;
+
       return {
         ...prev,
         spawnOffset: {
@@ -20,7 +23,7 @@ function App() {
           r,
         }
       }
-    })
+    });
   }
 
   useEffect(() => {
