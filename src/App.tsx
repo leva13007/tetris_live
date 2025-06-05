@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { grid as mockGrid } from './service/mock';
 import { getMergedGrid, getNextRotationBrick, getRandomBrick, hasCollision } from './service';
-import type { BrickIntance, Shape } from './service/type';
-import { TETROMINOES } from './service/constants';
+import type { BrickIntance, Grid, Row, Shape } from './service/type';
+import { COLS, ROWS, TETROMINOES } from './service/constants';
 
 function App() {
   console.log("Render App");
@@ -12,13 +12,44 @@ function App() {
   const [grid, setGrid] = useState(mockGrid);
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
+  const [score, setScore] = useState(0);
+  const [lines, setLines] = useState(0);
+
+
+  const clearLines = (grid: Grid): {
+    newGrid: Grid;
+    clearedlines: number;
+  } => {
+    const newGrid = [] as unknown as Grid;
+    let clearedlines = 0;
+
+    for (const row of grid) {
+      if (row.every(cell => cell === 1)) {
+        clearedlines++;
+      } else {
+        newGrid.push(row);
+      }
+    }
+
+    while (newGrid.length < ROWS) {
+      newGrid.unshift(Array(COLS).fill(0) as Row);
+    }
+
+    return {
+      newGrid: newGrid,
+      clearedlines,
+    }
+  }
 
 
   const moveDown = () => {
     const r = currentBrick.spawnOffset.r + 1;
     if (hasCollision(grid, currentBrick.shape, { r, c: currentBrick.spawnOffset.c })) {
       const mergedGrid = getMergedGrid(grid, currentBrick);
-      setGrid(mergedGrid);
+      const { clearedlines, newGrid } = clearLines(mergedGrid);
+      setScore(prev => prev + clearedlines * 10)
+      setLines(prev => prev + clearedlines);
+      setGrid(newGrid);
       setCurrentBrick(nextBrick);
       setNextBrick(getRandomBrick());
       if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
@@ -79,7 +110,7 @@ function App() {
     const timerId = setTimeout(() => {
       console.log("Timer tick")
       moveDown();
-    }, 1000);
+    }, 100);
     return () => clearTimeout(timerId)
   }, [currentBrick])
 
@@ -119,11 +150,11 @@ function App() {
         </div>
         <div className="game__score info-wrapper">
           <h3 className="text-title">Score</h3>
-          <div className="text-value">150</div>
+          <div className="text-value">{score}</div>
         </div>
         <div className="game__lines info-wrapper">
           <h3 className="text-title">Lines</h3>
-          <div className="text-value">12</div>
+          <div className="text-value">{lines}</div>
         </div>
         <div className="game__level info-wrapper">
           <h3 className="text-title">Level</h3>

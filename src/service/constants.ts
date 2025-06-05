@@ -203,8 +203,8 @@ export const TETROMINOES: Tetromino[] = [
       {
         shape: [
           [0, 1, 0, 0],
-          [0, 1, 1, 0],
-          [0, 0, 1, 0],
+          [1, 1, 0, 0],
+          [1, 0, 0, 0],
           [0, 0, 0, 0],
         ],
         spawnOffset: { r: 0, c: 3 },
