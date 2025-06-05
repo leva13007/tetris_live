@@ -1,37 +1,41 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { grid } from './service/mock';
+import { grid as mockGrid } from './service/mock';
 import { getMergedGrid, getRandomBrick, hasCollision } from './service';
-import type { BrickIntance, Grid, Point, Shape } from './service/type';
+import type { BrickIntance } from './service/type';
 
 function App() {
-  console.log("Render App", grid);
+  console.log("Render App");
 
+  const [grid, setGrid] = useState(mockGrid);
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
 
   const moveDown = () => {
-    setCurrentBrick(prev => {
-      const r = prev.spawnOffset.r + 1;
-
-      if (hasCollision(grid, prev.shape, { r, c: prev.spawnOffset.c })) return prev;
-
-      return {
-        ...prev,
+    const r = currentBrick.spawnOffset.r + 1;
+    if (hasCollision(grid, currentBrick.shape, { r, c: currentBrick.spawnOffset.c })) {
+      const mergedGrid = getMergedGrid(grid, currentBrick);
+      setGrid(mergedGrid);
+      setCurrentBrick(nextBrick);
+      setNextBrick(getRandomBrick())
+    } else {
+      setCurrentBrick({
+        ...currentBrick,
         spawnOffset: {
-          ...prev.spawnOffset,
           r,
+          c: currentBrick.spawnOffset.c
         }
-      }
-    });
+      })
+    }
   }
 
   useEffect(() => {
     const timerId = setInterval(() => {
+      console.log("Timer tick")
       moveDown();
     }, 1000);
     return () => clearInterval(timerId)
-  }, [])
+  }, [currentBrick])
 
   const mergedGrid = getMergedGrid(grid, currentBrick);
 
