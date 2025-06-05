@@ -37,8 +37,8 @@ export const hasCollision = (grid: Grid, shape: Shape, nextOffser: Point): boole
         const r = nextOffser.r + dr;
         const c = nextOffser.c + dc;
         if (
-          r > ROWS ||
-          c < 0  ||
+          r >= ROWS ||
+          c < 0 ||
           c >= COLS ||
           grid[r][c]
         ) {
@@ -48,4 +48,19 @@ export const hasCollision = (grid: Grid, shape: Shape, nextOffser: Point): boole
     }
   }
   return false;
+}
+
+export const getNextRotationBrick = (
+  name: string,
+  rotationIndex: number,
+): {
+  shape: Shape;
+  rotationIndex: number;
+} => {
+  const tetromino = TETROMINOES.find(t => t.name === name);
+  const nextRotationIndex = (rotationIndex + 1) % tetromino!.rotations.length
+  return {
+    rotationIndex: nextRotationIndex,
+    shape: tetromino!.rotations[nextRotationIndex].shape
+  }
 }

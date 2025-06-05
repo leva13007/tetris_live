@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { grid as mockGrid } from './service/mock';
-import { getMergedGrid, getRandomBrick, hasCollision } from './service';
-import type { BrickIntance } from './service/type';
+import { getMergedGrid, getNextRotationBrick, getRandomBrick, hasCollision } from './service';
+import type { BrickIntance, Shape } from './service/type';
+import { TETROMINOES } from './service/constants';
 
 function App() {
   console.log("Render App");
@@ -38,27 +39,40 @@ function App() {
     const c = currentBrick.spawnOffset.c + dc;
     if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return;
     setCurrentBrick({
-        ...currentBrick,
-        spawnOffset: {
-          r: currentBrick.spawnOffset.r, c
-        }
-      })
+      ...currentBrick,
+      spawnOffset: {
+        r: currentBrick.spawnOffset.r, c
+      }
+    })
+  }
+
+  const rotate = () => {
+    const nextShape = getNextRotationBrick(currentBrick.name, currentBrick.rotationIndex);
+    if (hasCollision(grid, nextShape.shape, { r: currentBrick.spawnOffset.r, c: currentBrick.spawnOffset.c })) return;
+    setCurrentBrick({
+      ...currentBrick,
+      shape: nextShape.shape,
+      rotationIndex: nextShape.rotationIndex,
+    })
   }
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
+      console.log("ev.key", ev.code)
       if (isGameOver) return;
-      if (ev.key === 'ArrowLeft') {
+      if (ev.code === 'ArrowLeft') {
         moveSides(-1);
-      } else if (ev.key === 'ArrowRight') {
+      } else if (ev.code === 'ArrowRight') {
         moveSides(1);
-      } else if (ev.key === 'ArrowDown') {
+      } else if (ev.code === 'ArrowDown') {
         moveDown();
+      } else if (ev.code === 'Space') {
+        rotate();
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  },[currentBrick])
+  }, [currentBrick])
 
   useEffect(() => {
     if (isGameOver) return;
