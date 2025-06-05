@@ -12,7 +12,6 @@ function App() {
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
 
-  console.log("isGameOver", isGameOver)
 
   const moveDown = () => {
     const r = currentBrick.spawnOffset.r + 1;
@@ -34,6 +33,32 @@ function App() {
       })
     }
   }
+
+  const moveSides = (dc: number) => {
+    const c = currentBrick.spawnOffset.c + dc;
+    if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return;
+    setCurrentBrick({
+        ...currentBrick,
+        spawnOffset: {
+          r: currentBrick.spawnOffset.r, c
+        }
+      })
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (ev: KeyboardEvent) => {
+      if (isGameOver) return;
+      if (ev.key === 'ArrowLeft') {
+        moveSides(-1);
+      } else if (ev.key === 'ArrowRight') {
+        moveSides(1);
+      } else if (ev.key === 'ArrowDown') {
+        moveDown();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  },[currentBrick])
 
   useEffect(() => {
     if (isGameOver) return;

@@ -36,7 +36,12 @@ export const hasCollision = (grid: Grid, shape: Shape, nextOffser: Point): boole
       if (shape[dr][dc]) {
         const r = nextOffser.r + dr;
         const c = nextOffser.c + dc;
-        if (r > ROWS || grid[r][c]) {
+        if (
+          r > ROWS ||
+          c < 0  ||
+          c >= COLS ||
+          grid[r][c]
+        ) {
           return true;
         }
       }
