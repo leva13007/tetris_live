@@ -7,9 +7,12 @@ import type { BrickIntance } from './service/type';
 function App() {
   console.log("Render App");
 
+  const [isGameOver, setGameOver] = useState(false);
   const [grid, setGrid] = useState(mockGrid);
   const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
+
+  console.log("isGameOver", isGameOver)
 
   const moveDown = () => {
     const r = currentBrick.spawnOffset.r + 1;
@@ -17,7 +20,10 @@ function App() {
       const mergedGrid = getMergedGrid(grid, currentBrick);
       setGrid(mergedGrid);
       setCurrentBrick(nextBrick);
-      setNextBrick(getRandomBrick())
+      setNextBrick(getRandomBrick());
+      if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
+        setGameOver(true);
+      }
     } else {
       setCurrentBrick({
         ...currentBrick,
@@ -30,11 +36,12 @@ function App() {
   }
 
   useEffect(() => {
-    const timerId = setInterval(() => {
+    if (isGameOver) return;
+    const timerId = setTimeout(() => {
       console.log("Timer tick")
       moveDown();
     }, 1000);
-    return () => clearInterval(timerId)
+    return () => clearTimeout(timerId)
   }, [currentBrick])
 
   const mergedGrid = getMergedGrid(grid, currentBrick);
