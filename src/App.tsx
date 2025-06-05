@@ -14,6 +14,8 @@ function App() {
   const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
   const [score, setScore] = useState(0);
   const [lines, setLines] = useState(0);
+  const [isPause, setPause] = useState(false);
+  const [gameMsg, setGameMsg] = useState("");
 
 
   const clearLines = (grid: Grid): {
@@ -43,6 +45,7 @@ function App() {
 
 
   const moveDown = () => {
+    if (isGameOver || isPause) return;
     const r = currentBrick.spawnOffset.r + 1;
     if (hasCollision(grid, currentBrick.shape, { r, c: currentBrick.spawnOffset.c })) {
       const mergedGrid = getMergedGrid(grid, currentBrick);
@@ -54,6 +57,7 @@ function App() {
       setNextBrick(getRandomBrick());
       if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
         setGameOver(true);
+        setGameMsg("GameOver!");
       }
     } else {
       setCurrentBrick({
@@ -67,6 +71,7 @@ function App() {
   }
 
   const moveSides = (dc: number) => {
+    if (isGameOver || isPause) return;
     const c = currentBrick.spawnOffset.c + dc;
     if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return;
     setCurrentBrick({
@@ -78,6 +83,7 @@ function App() {
   }
 
   const rotate = () => {
+    if (isGameOver || isPause) return;
     const nextShape = getNextRotationBrick(currentBrick.name, currentBrick.rotationIndex);
     if (hasCollision(grid, nextShape.shape, { r: currentBrick.spawnOffset.r, c: currentBrick.spawnOffset.c })) return;
     setCurrentBrick({
@@ -99,26 +105,38 @@ function App() {
         moveDown();
       } else if (ev.code === 'Space') {
         rotate();
+      } else if (ev.code === 'Escape') {
+        setPause(prev => !prev);
+        if(isPause) {
+          setGameMsg("")
+        } else {
+          setGameMsg("Pause")
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentBrick])
+  }, [currentBrick, isPause])
 
   useEffect(() => {
-    if (isGameOver) return;
+    if (isGameOver || isPause) return;
     const timerId = setTimeout(() => {
       console.log("Timer tick")
       moveDown();
-    }, 100);
+    }, 1000);
     return () => clearTimeout(timerId)
-  }, [currentBrick])
+  }, [currentBrick, isPause])
 
   const mergedGrid = getMergedGrid(grid, currentBrick);
 
   return (
     <main className='game'>
       <section className="game__grid game__grid-border">
+        {
+          gameMsg && (
+            <div className="game-status">{gameMsg}</div>
+          )
+        }
         {
           mergedGrid.map((row, i) => (
             <div key={i} className="grid__row">

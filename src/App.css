@@ -19,6 +19,24 @@
     display: flex;
     flex-direction: column;
     gap: var(--cell-gap);
+    position: relative;
+
+    .game-status{
+      position: absolute;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      left: 50%;
+      top: 50%;
+      border: 1px solid #000;
+      background-color: #fff;
+      padding: 36px;
+      font-size: 24px;
+      border-radius: 4px;
+      font-family: "Press Start 2P", system-ui;
+      font-weight: 400;
+      font-style: normal;
+      box-shadow: 2px 2px 4px 2px #000;
+    }
     
     .grid__row{
       display: flex;
