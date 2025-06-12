@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'DS-Digital';
+  src: url('/fonts/DS-DIGI.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DS-Digital';
+  src: url('/fonts/DS-DIGII.TTF') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}

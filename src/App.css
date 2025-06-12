@@ -72,15 +72,22 @@
     padding: 32px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 24px;
     .info-wrapper{
+      font-family: 'DS-Digital', system-ui;
+      font-weight: 400;
+      font-style: italic;
       .text-title{
         margin-bottom: 4px;
         font-size: 2rem;
       }
       .text-value{
-        font-size: 1.5rem;
+        font-size: 2.5rem;
       }
     }
   }
+}
+
+.game__score > *, .game__lines > *, .game__level > * {
+  
 }
