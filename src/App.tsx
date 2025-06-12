@@ -5,9 +5,10 @@ import { getMergedGrid, getRandomBrick, moveSides, rotate, tick } from './servic
 import type { GameState } from './service/type';
 
 function App() {
-  console.log("Render App");
+  
 
   const [gameTick, setGameTick] = useState(0);
+  console.log("Render App", gameTick);
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
@@ -72,17 +73,18 @@ function App() {
   });
 
   const loop = () => {
-    console.log("Game tick");
+    // console.log("Game tick");
     if (gameState.current.isGameOver || gameState.current.isPause) {
       return;
     }
 
-    gameState.current = tick(gameState.current);
-
-    forceRender();
+    
     gameTimer = setTimeout(() => {
+      gameState.current = tick(gameState.current);
+
+      forceRender();
       loop();
-    }, 1000 / 0.5);
+    }, 1000 / 1);
   }
 
   useEffect(() => {
