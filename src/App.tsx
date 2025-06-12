@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { grid as mockGrid } from './service/mock';
-import { getMergedGrid, getNextRotationBrick, getRandomBrick, hasCollision } from './service';
-import type { BrickIntance, Grid, Row, Shape } from './service/type';
-import { COLS, ROWS, TETROMINOES } from './service/constants';
+import { getMergedGrid, getRandomBrick, moveDown, moveSides, rotate } from './service';
+import type { BrickIntance } from './service/type';
 
 function App() {
   console.log("Render App");
@@ -17,94 +16,51 @@ function App() {
   const [isPause, setPause] = useState(false);
   const [gameMsg, setGameMsg] = useState("");
 
-
-  const clearLines = (grid: Grid): {
-    newGrid: Grid;
-    clearedlines: number;
-  } => {
-    const newGrid = [] as unknown as Grid;
-    let clearedlines = 0;
-
-    for (const row of grid) {
-      if (row.every(cell => cell === 1)) {
-        clearedlines++;
-      } else {
-        newGrid.push(row);
-      }
-    }
-
-    while (newGrid.length < ROWS) {
-      newGrid.unshift(Array(COLS).fill(0) as Row);
-    }
-
-    return {
-      newGrid: newGrid,
-      clearedlines,
-    }
-  }
-
-
-  const moveDown = () => {
-    if (isGameOver || isPause) return;
-    const r = currentBrick.spawnOffset.r + 1;
-    if (hasCollision(grid, currentBrick.shape, { r, c: currentBrick.spawnOffset.c })) {
-      const mergedGrid = getMergedGrid(grid, currentBrick);
-      const { clearedlines, newGrid } = clearLines(mergedGrid);
-      setScore(prev => prev + clearedlines * 10)
-      setLines(prev => prev + clearedlines);
-      setGrid(newGrid);
-      setCurrentBrick(nextBrick);
-      setNextBrick(getRandomBrick());
-      if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
-        setGameOver(true);
-        setGameMsg("GameOver!");
-      }
-    } else {
-      setCurrentBrick({
-        ...currentBrick,
-        spawnOffset: {
-          r,
-          c: currentBrick.spawnOffset.c
-        }
-      })
-    }
-  }
-
-  const moveSides = (dc: number) => {
-    if (isGameOver || isPause) return;
-    const c = currentBrick.spawnOffset.c + dc;
-    if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return;
-    setCurrentBrick({
-      ...currentBrick,
-      spawnOffset: {
-        r: currentBrick.spawnOffset.r, c
-      }
-    })
-  }
-
-  const rotate = () => {
-    if (isGameOver || isPause) return;
-    const nextShape = getNextRotationBrick(currentBrick.name, currentBrick.rotationIndex);
-    if (hasCollision(grid, nextShape.shape, { r: currentBrick.spawnOffset.r, c: currentBrick.spawnOffset.c })) return;
-    setCurrentBrick({
-      ...currentBrick,
-      shape: nextShape.shape,
-      rotationIndex: nextShape.rotationIndex,
-    })
-  }
-
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
       console.log("ev.key", ev.code)
       if (isGameOver) return;
       if (ev.code === 'ArrowLeft') {
-        moveSides(-1);
+        moveSides({
+          grid,
+          currentBrick,
+          setCurrentBrick,
+          dc: -1,
+          isGameOver,
+          isPause
+        });
       } else if (ev.code === 'ArrowRight') {
-        moveSides(1);
+        moveSides({
+          grid,
+          currentBrick,
+          setCurrentBrick,
+          dc: 1,
+          isGameOver,
+          isPause
+        });
       } else if (ev.code === 'ArrowDown') {
-        moveDown();
+        moveDown({
+          isGameOver,
+          isPause,
+          grid,
+          currentBrick,
+          setCurrentBrick,
+          setGrid,
+          setScore,
+          setLines,
+          setNextBrick,
+          nextBrick,
+          setGameOver,
+          setGameMsg
+        });
       } else if (ev.code === 'Space') {
-        rotate();
+        rotate({
+          grid,
+          currentBrick,
+          setCurrentBrick,
+          isGameOver,
+          isPause
+        });
       } else if (ev.code === 'Escape') {
         setPause(prev => !prev);
         if(isPause) {
@@ -122,7 +78,20 @@ function App() {
     if (isGameOver || isPause) return;
     const timerId = setTimeout(() => {
       console.log("Timer tick")
-      moveDown();
+      moveDown({
+        isGameOver,
+        isPause,
+        grid,
+        currentBrick,
+        setCurrentBrick,
+        setGrid,
+        setScore,
+        setLines,
+        setNextBrick,
+        nextBrick,
+        setGameOver,
+        setGameMsg
+      });
     }, 1000);
     return () => clearTimeout(timerId)
   }, [currentBrick, isPause])
