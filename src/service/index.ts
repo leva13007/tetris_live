@@ -1,5 +1,5 @@
 import { COLS, ROWS, SHAPE_SIZE, TETROMINOES } from "./constants";
-import type { BrickIntance, Grid, Point, Row, Shape } from "./type";
+import type { BrickIntance, GameState, Grid, Point, Row, Shape } from "./type";
 
 export const getRandomBrick = (): BrickIntance => {
 
@@ -117,7 +117,7 @@ export const moveDown = ({
       gotCollision: true,
     }
 
-  } 
+  }
   return {
     nextBrickMove: {
       ...currentBrick,
@@ -152,5 +152,39 @@ export const clearLines = (grid: Grid): {
   return {
     newGrid: newGrid,
     clearedlines,
+  }
+}
+
+export const tick = (gameState: GameState): GameState => {
+  const movement = moveDown({
+    grid: gameState.grid,
+    currentBrick: gameState.currentBrick,
+  });
+
+  if (!movement.gotCollision) {
+    return {
+      ...gameState,
+      currentBrick: movement.nextBrickMove,
+    };
+  }
+
+  const mergedGrid = getMergedGrid(gameState.grid, gameState.currentBrick);
+  const { clearedlines, newGrid } = clearLines(mergedGrid);
+  let isGameOver = false;
+  let gameMsg = "";
+  if (hasCollision(gameState.grid, gameState.nextBrick.shape, gameState.nextBrick.spawnOffset)) {
+    isGameOver = true;
+    gameMsg = "GameOver!";
+  }
+
+  return {
+    ...gameState,
+    grid: newGrid,
+    currentBrick: gameState.nextBrick,
+    nextBrick: getRandomBrick(),
+    score: gameState.score + clearedlines * 10,
+    lines: gameState.lines + clearedlines,
+    isGameOver,
+    gameMsg,
   }
 }

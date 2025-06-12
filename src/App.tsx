@@ -1,103 +1,107 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { grid as mockGrid } from './service/mock';
-import { clearLines, getMergedGrid, getRandomBrick, hasCollision, moveDown, moveSides, rotate } from './service';
-import type { BrickIntance } from './service/type';
+import { getMergedGrid, getRandomBrick, moveSides, rotate, tick } from './service';
+import type { GameState } from './service/type';
 
 function App() {
   console.log("Render App");
 
-  const [isGameOver, setGameOver] = useState(false);
-  const [grid, setGrid] = useState(mockGrid);
-  const [currentBrick, setCurrentBrick] = useState<BrickIntance>(getRandomBrick());
-  const [nextBrick, setNextBrick] = useState<BrickIntance>(getRandomBrick());
-  const [score, setScore] = useState(0);
-  const [lines, setLines] = useState(0);
-  const [isPause, setPause] = useState(false);
-  const [gameMsg, setGameMsg] = useState("");
-
-  const moveDownHandler = () => {
-    const { nextBrickMove, gotCollision } = moveDown({
-      grid,
-      currentBrick,
-    });
-
-    if (gotCollision) {
-      const mergedGrid = getMergedGrid(grid, currentBrick);
-      const { clearedlines, newGrid } = clearLines(mergedGrid);
-      setScore(prev => prev + clearedlines * 10)
-      setLines(prev => prev + clearedlines);
-      setGrid(newGrid);
-      setCurrentBrick(nextBrick);
-      setNextBrick(getRandomBrick());
-      if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
-        setGameOver(true);
-        setGameMsg("GameOver!");
-      }
-    } else {
-      setCurrentBrick(nextBrickMove);
-    }
-  }
+  const [gameTick, setGameTick] = useState(0);
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
       console.log("ev.key", ev.code)
-      if (isGameOver) return;
+      if (gameState.current.isGameOver) return;
       if (ev.code === 'Escape') {
-        setPause(prev => !prev);
-        if (isPause) {
-          setGameMsg("")
+        gameState.current.isPause = !gameState.current.isPause;
+        gameState.current.gameMsg = gameState.current.isPause ? "Pause" : "";
+        if (gameState.current.isPause) {
+          if (gameTimer) {
+            clearTimeout(gameTimer);
+          }
         } else {
-          setGameMsg("Pause")
+          loop();
         }
+        forceRender();
         return;
       }
-      if (isPause) return;
+      if (gameState.current.isPause) return;
       if (ev.code === 'ArrowLeft') {
-        const nextBrickMove = moveSides({
-          grid,
-          currentBrick,
+        gameState.current.currentBrick = moveSides({
+          grid: gameState.current.grid,
+          currentBrick: gameState.current.currentBrick,
           dc: -1,
         });
-        setCurrentBrick(nextBrickMove);
       } else if (ev.code === 'ArrowRight') {
-        const nextBrickMove = moveSides({
-          grid,
-          currentBrick,
+        gameState.current.currentBrick = moveSides({
+          grid: gameState.current.grid,
+          currentBrick: gameState.current.currentBrick,
           dc: 1,
         });
-        setCurrentBrick(nextBrickMove);
       } else if (ev.code === 'ArrowDown') {
-        moveDownHandler();
+        gameState.current = tick(gameState.current);
       } else if (ev.code === 'Space') {
-        const nextBrickMove = rotate({
-          grid,
-          currentBrick,
+        gameState.current.currentBrick = rotate({
+          grid: gameState.current.grid,
+          currentBrick: gameState.current.currentBrick,
         });
-        setCurrentBrick(nextBrickMove);
       }
+      forceRender();
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentBrick, isPause])
+  }, [gameTick])
+
+
+  let gameTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const forceRender = () => {
+    setGameTick(prev => prev + 1);
+  }
+
+  const gameState = useRef<GameState>({
+    isGameOver: false,
+    grid: mockGrid,
+    currentBrick: getRandomBrick(),
+    nextBrick: getRandomBrick(),
+    score: 0,
+    lines: 0,
+    isPause: false,
+    gameMsg: ""
+  });
+
+  const loop = () => {
+    console.log("Game tick");
+    if (gameState.current.isGameOver || gameState.current.isPause) {
+      return;
+    }
+
+    gameState.current = tick(gameState.current);
+
+    forceRender();
+    gameTimer = setTimeout(() => {
+      loop();
+    }, 1000 / 0.5);
+  }
 
   useEffect(() => {
-    if (isGameOver || isPause) return;
-    const timerId = setTimeout(() => {
-      console.log("Timer tick")
-      moveDownHandler();
-    }, 1000);
-    return () => clearTimeout(timerId)
-  }, [currentBrick, isPause])
+    loop();
+    return () => {
+      if (gameTimer) {
+        clearTimeout(gameTimer);
+      }
+    };
+  }, [])
 
-  const mergedGrid = getMergedGrid(grid, currentBrick);
+  const mergedGrid = getMergedGrid(gameState.current.grid, gameState.current.currentBrick);
 
   return (
     <main className='game'>
       <section className="game__grid game__grid-border">
         {
-          gameMsg && (
-            <div className="game-status">{gameMsg}</div>
+          gameState.current.gameMsg && (
+            <div className="game-status">{gameState.current.gameMsg}</div>
           )
         }
         {
@@ -117,7 +121,7 @@ function App() {
           <h3 className="text-title">Next brick</h3>
           <div className="next-brick__gird game__grid">
             {
-              nextBrick.shape.map((row, i) => (
+              gameState.current.nextBrick.shape.map((row, i) => (
                 <div key={i} className="grid__row">
                   {
                     row.map((cell, j) => (
@@ -131,11 +135,11 @@ function App() {
         </div>
         <div className="game__score info-wrapper">
           <h3 className="text-title">Score</h3>
-          <div className="text-value">{score}</div>
+          <div className="text-value">{gameState.current.score}</div>
         </div>
         <div className="game__lines info-wrapper">
           <h3 className="text-title">Lines</h3>
-          <div className="text-value">{lines}</div>
+          <div className="text-value">{gameState.current.lines}</div>
         </div>
         <div className="game__level info-wrapper">
           <h3 className="text-title">Level</h3>

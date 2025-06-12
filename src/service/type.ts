@@ -16,7 +16,7 @@ export type Rotate = {
   spawnOffset: Point;
 }
 
-export type BrickIntance = Rotate & {rotationIndex: number; name: string};
+export type BrickIntance = Rotate & { rotationIndex: number; name: string };
 
 export type Tetromino = {
   name: string;
@@ -27,3 +27,14 @@ export type Row = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
 export type Grid = [
   Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row,
 ]
+
+export type GameState = {
+  isGameOver: boolean;
+  grid: Grid;
+  currentBrick: BrickIntance;
+  nextBrick: BrickIntance;
+  score: number;
+  lines: number;
+  isPause: boolean;
+  gameMsg: string;
+}
