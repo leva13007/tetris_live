@@ -4,10 +4,11 @@ import type { BrickIntance, GameState, Grid, Point, Row, Shape } from "./type";
 export const getRandomBrick = (): BrickIntance => {
 
   const nextBrickIndex = Math.floor(Math.random() * TETROMINOES.length);
-  const nextBrick = TETROMINOES[nextBrickIndex].rotations[Math.floor(Math.random() * TETROMINOES[nextBrickIndex].rotations.length)];
+  const nextRotationIndex = Math.floor(Math.random() * TETROMINOES[nextBrickIndex].rotations.length);
+  const nextBrick = TETROMINOES[nextBrickIndex].rotations[nextRotationIndex];
   return {
     ...nextBrick,
-    rotationIndex: nextBrickIndex,
+    rotationIndex: nextRotationIndex,
     name: TETROMINOES[nextBrickIndex].name,
   };
 }
@@ -58,7 +59,8 @@ export const getNextRotationBrick = (
   rotationIndex: number;
 } => {
   const tetromino = TETROMINOES.find(t => t.name === name);
-  const nextRotationIndex = (rotationIndex + 1) % tetromino!.rotations.length
+  const nextRotationIndex = (rotationIndex + 1) % tetromino!.rotations.length;
+  console.log("nextRotationIndex", rotationIndex, nextRotationIndex);
   return {
     rotationIndex: nextRotationIndex,
     shape: tetromino!.rotations[nextRotationIndex].shape
