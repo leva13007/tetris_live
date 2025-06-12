@@ -68,126 +68,89 @@ export const getNextRotationBrick = (
 export const rotate = ({
   grid,
   currentBrick,
-  setCurrentBrick,
-  isGameOver,
-  isPause,
 }: {
   grid: Grid;
   currentBrick: BrickIntance;
-  setCurrentBrick: (brick: BrickIntance) => void;
-  isGameOver: boolean;
-  isPause: boolean;
-}) => {
-  if (isGameOver || isPause) return;
+}): BrickIntance => {
   const nextShape = getNextRotationBrick(currentBrick.name, currentBrick.rotationIndex);
-  if (hasCollision(grid, nextShape.shape, { r: currentBrick.spawnOffset.r, c: currentBrick.spawnOffset.c })) return;
-  setCurrentBrick({
+  if (hasCollision(grid, nextShape.shape, { r: currentBrick.spawnOffset.r, c: currentBrick.spawnOffset.c })) {
+    return currentBrick
+  }
+  return {
     ...currentBrick,
     shape: nextShape.shape,
     rotationIndex: nextShape.rotationIndex,
-  })
+  }
 }
 
 
 export const moveSides = ({
   grid,
   currentBrick,
-  setCurrentBrick,
   dc,
-  isGameOver,
-  isPause,
 }: {
   grid: Grid;
   currentBrick: BrickIntance;
-  setCurrentBrick: (brick: BrickIntance) => void;
   dc: number;
-  isGameOver: boolean;
-  isPause: boolean;
-}) => {
-  if (isGameOver || isPause) return;
+}): BrickIntance => {
   const c = currentBrick.spawnOffset.c + dc;
-  if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return;
-  setCurrentBrick({
+  if (hasCollision(grid, currentBrick.shape, { r: currentBrick.spawnOffset.r, c })) return currentBrick;
+  return {
     ...currentBrick,
     spawnOffset: {
       r: currentBrick.spawnOffset.r, c
     }
-  })
+  }
 }
 
 export const moveDown = ({
-  isGameOver,
-  isPause,
   grid,
   currentBrick,
-  setCurrentBrick,
-  setGrid,
-  setScore,
-  setLines,
-  setNextBrick,
-  nextBrick,
-  setGameOver,
-  setGameMsg,
 }: {
-  isGameOver: boolean;
-  isPause: boolean;
   grid: Grid;
   currentBrick: BrickIntance;
-  setCurrentBrick: (brick: BrickIntance) => void;
-  setGrid: (grid: Grid) => void;
-  setScore: (value: number | ((prev: number) => number)) => void;
-  setLines: (value: number | ((prev: number) => number)) => void;
-  setNextBrick: (brick: BrickIntance) => void;
-  nextBrick: BrickIntance;
-  setGameOver: (gameOver: boolean) => void;
-  setGameMsg: (msg: string) => void;
 }) => {
-  if (isGameOver || isPause) return;
   const r = currentBrick.spawnOffset.r + 1;
   if (hasCollision(grid, currentBrick.shape, { r, c: currentBrick.spawnOffset.c })) {
-    const mergedGrid = getMergedGrid(grid, currentBrick);
-    const { clearedlines, newGrid } = clearLines(mergedGrid);
-    setScore(prev => prev + clearedlines * 10)
-    setLines(prev => prev + clearedlines);
-    setGrid(newGrid);
-    setCurrentBrick(nextBrick);
-    setNextBrick(getRandomBrick());
-    if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
-      setGameOver(true);
-      setGameMsg("GameOver!");
+    return {
+      nextBrickMove: currentBrick,
+      gotCollision: true,
     }
-  } else {
-    setCurrentBrick({
+
+  } 
+  return {
+    nextBrickMove: {
       ...currentBrick,
       spawnOffset: {
         r,
         c: currentBrick.spawnOffset.c
       }
-    })
+    },
+    gotCollision: false,
   }
 }
 
 export const clearLines = (grid: Grid): {
-    newGrid: Grid;
-    clearedlines: number;
-  } => {
-    const newGrid = [] as unknown as Grid;
-    let clearedlines = 0;
+  newGrid: Grid;
+  clearedlines: number;
+} => {
+  const newGrid = [] as unknown as Grid;
+  let clearedlines = 0;
 
-    for (const row of grid) {
-      if (row.every(cell => cell === 1)) {
-        clearedlines++;
-      } else {
-        newGrid.push(row);
-      }
-    }
-
-    while (newGrid.length < ROWS) {
-      newGrid.unshift(Array(COLS).fill(0) as Row);
-    }
-
-    return {
-      newGrid: newGrid,
-      clearedlines,
+  for (const row of grid) {
+    if (row.every(cell => cell === 1)) {
+      clearedlines++;
+    } else {
+      newGrid.push(row);
     }
   }
+
+  while (newGrid.length < ROWS) {
+    newGrid.unshift(Array(COLS).fill(0) as Row);
+  }
+
+  return {
+    newGrid: newGrid,
+    clearedlines,
+  }
+}

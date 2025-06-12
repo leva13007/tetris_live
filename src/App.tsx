@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { grid as mockGrid } from './service/mock';
-import { getMergedGrid, getRandomBrick, moveDown, moveSides, rotate } from './service';
+import { clearLines, getMergedGrid, getRandomBrick, hasCollision, moveDown, moveSides, rotate } from './service';
 import type { BrickIntance } from './service/type';
 
 function App() {
@@ -16,58 +16,65 @@ function App() {
   const [isPause, setPause] = useState(false);
   const [gameMsg, setGameMsg] = useState("");
 
+  const moveDownHandler = () => {
+    const { nextBrickMove, gotCollision } = moveDown({
+      grid,
+      currentBrick,
+    });
+
+    if (gotCollision) {
+      const mergedGrid = getMergedGrid(grid, currentBrick);
+      const { clearedlines, newGrid } = clearLines(mergedGrid);
+      setScore(prev => prev + clearedlines * 10)
+      setLines(prev => prev + clearedlines);
+      setGrid(newGrid);
+      setCurrentBrick(nextBrick);
+      setNextBrick(getRandomBrick());
+      if (hasCollision(grid, nextBrick.shape, nextBrick.spawnOffset)) {
+        setGameOver(true);
+        setGameMsg("GameOver!");
+      }
+    } else {
+      setCurrentBrick(nextBrickMove);
+    }
+  }
+
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
       console.log("ev.key", ev.code)
       if (isGameOver) return;
-      if (ev.code === 'ArrowLeft') {
-        moveSides({
-          grid,
-          currentBrick,
-          setCurrentBrick,
-          dc: -1,
-          isGameOver,
-          isPause
-        });
-      } else if (ev.code === 'ArrowRight') {
-        moveSides({
-          grid,
-          currentBrick,
-          setCurrentBrick,
-          dc: 1,
-          isGameOver,
-          isPause
-        });
-      } else if (ev.code === 'ArrowDown') {
-        moveDown({
-          isGameOver,
-          isPause,
-          grid,
-          currentBrick,
-          setCurrentBrick,
-          setGrid,
-          setScore,
-          setLines,
-          setNextBrick,
-          nextBrick,
-          setGameOver,
-          setGameMsg
-        });
-      } else if (ev.code === 'Space') {
-        rotate({
-          grid,
-          currentBrick,
-          setCurrentBrick,
-          isGameOver,
-          isPause
-        });
-      } else if (ev.code === 'Escape') {
+      if (ev.code === 'Escape') {
         setPause(prev => !prev);
-        if(isPause) {
+        if (isPause) {
           setGameMsg("")
         } else {
           setGameMsg("Pause")
         }
+        return;
+      }
+      if (isPause) return;
+      if (ev.code === 'ArrowLeft') {
+        const nextBrickMove = moveSides({
+          grid,
+          currentBrick,
+          dc: -1,
+        });
+        setCurrentBrick(nextBrickMove);
+      } else if (ev.code === 'ArrowRight') {
+        const nextBrickMove = moveSides({
+          grid,
+          currentBrick,
+          dc: 1,
+        });
+        setCurrentBrick(nextBrickMove);
+      } else if (ev.code === 'ArrowDown') {
+        moveDownHandler();
+      } else if (ev.code === 'Space') {
+        const nextBrickMove = rotate({
+          grid,
+          currentBrick,
+        });
+        setCurrentBrick(nextBrickMove);
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -78,20 +85,7 @@ function App() {
     if (isGameOver || isPause) return;
     const timerId = setTimeout(() => {
       console.log("Timer tick")
-      moveDown({
-        isGameOver,
-        isPause,
-        grid,
-        currentBrick,
-        setCurrentBrick,
-        setGrid,
-        setScore,
-        setLines,
-        setNextBrick,
-        nextBrick,
-        setGameOver,
-        setGameMsg
-      });
+      moveDownHandler();
     }, 1000);
     return () => clearTimeout(timerId)
   }, [currentBrick, isPause])
