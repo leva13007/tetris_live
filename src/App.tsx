@@ -5,8 +5,6 @@ import { getMergedGrid, getRandomBrick, moveSides, rotate, tick } from './servic
 import type { GameState } from './service/type';
 
 function App() {
-  
-
   const [gameTick, setGameTick] = useState(0);
   console.log("Render App", gameTick);
 
@@ -68,6 +66,7 @@ function App() {
     nextBrick: getRandomBrick(),
     score: 0,
     lines: 0,
+    level: 1,
     isPause: false,
     gameMsg: ""
   });
@@ -78,13 +77,12 @@ function App() {
       return;
     }
 
-    
     gameTimer = setTimeout(() => {
       gameState.current = tick(gameState.current);
 
       forceRender();
       loop();
-    }, 1000 / 1);
+    }, 1000 / gameState.current.level);
   }
 
   useEffect(() => {
@@ -145,7 +143,7 @@ function App() {
         </div>
         <div className="game__level info-wrapper">
           <h3 className="text-title">Level</h3>
-          <div className="text-value">5</div>
+          <div className="text-value">{gameState.current.level}</div>
         </div>
       </section>
     </main>

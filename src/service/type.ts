@@ -35,6 +35,7 @@ export type GameState = {
   nextBrick: BrickIntance;
   score: number;
   lines: number;
+  level: number;
   isPause: boolean;
   gameMsg: string;
 }

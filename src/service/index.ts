@@ -186,6 +186,7 @@ export const tick = (gameState: GameState): GameState => {
     nextBrick: getRandomBrick(),
     score: gameState.score + clearedlines * 10,
     lines: gameState.lines + clearedlines,
+    level: Math.floor((gameState.lines + clearedlines) / 10) + 1,
     isGameOver,
     gameMsg,
   }
