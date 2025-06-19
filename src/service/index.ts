@@ -1,15 +1,16 @@
-import { COLS, ROWS, SHAPE_SIZE, TETROMINOES } from "./constants";
+import { COLS, EMPTY_TETROMINO, ROWS, SHAPE_SIZE, TETROMINOES } from "./constants";
 import type { BrickIntance, GameState, Grid, Point, Row, Shape } from "./type";
 
-export const getRandomBrick = (): BrickIntance => {
+export const getRandomBrick = (getEmpty = false): BrickIntance => {
+  const tetro = getEmpty ? EMPTY_TETROMINO : TETROMINOES;
 
-  const nextBrickIndex = Math.floor(Math.random() * TETROMINOES.length);
-  const nextRotationIndex = Math.floor(Math.random() * TETROMINOES[nextBrickIndex].rotations.length);
-  const nextBrick = TETROMINOES[nextBrickIndex].rotations[nextRotationIndex];
+  const nextBrickIndex = Math.floor(Math.random() * tetro.length);
+  const nextRotationIndex = getEmpty ? 0 : Math.floor(Math.random() * tetro[nextBrickIndex].rotations.length);
+  const nextBrick = tetro[nextBrickIndex].rotations[nextRotationIndex];
   return {
     ...nextBrick,
     rotationIndex: nextRotationIndex,
-    name: TETROMINOES[nextBrickIndex].name,
+    name: tetro[nextBrickIndex].name,
   };
 }
 
@@ -158,6 +159,9 @@ export const clearLines = (grid: Grid): {
 }
 
 export const tick = (gameState: GameState): GameState => {
+  if (gameState.isGameOver || gameState.isPause) {
+    return gameState;
+  }
   const movement = moveDown({
     grid: gameState.grid,
     currentBrick: gameState.currentBrick,

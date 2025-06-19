@@ -4,7 +4,7 @@ export const GameMessage = memo(({ message }: { message: string }) => (
   <>
     {
       message && (
-        <div className="game-status">{message}</div>
+        <div data-testid="game-message" className="game-status">{message}</div>
       )
     }
   </>

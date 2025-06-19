@@ -10,5 +10,5 @@ export const GridCell = memo(({
   j: number;
   cell: Cell;
 }) => (
-  <div key={`${i} ${j}`} className={`grid__cell ${cell ? 'grid__cell--active' : ''}`}></div>
+  <div data-testid={`grid-cell-${i}-${j}`} key={`${i} ${j}`} className={`grid__cell ${cell ? 'grid__cell--active' : ''}`}></div>
 ))

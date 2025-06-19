@@ -4,6 +4,26 @@ export const ROWS = 20;
 export const COLS = 10;
 export const SHAPE_SIZE = 4;
 
+export const GET_WELCOME_SCREEN = 0;
+export const GET_GAME_MAP = 1;
+
+export const EMPTY_TETROMINO: Tetromino[] = [
+  {
+    name: "E",
+    rotations: [
+      {
+        shape: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+        spawnOffset: { r: 0, c: 0 },
+      },
+    ],
+  }
+];
+
 export const TETROMINOES: Tetromino[] = [
   {
     name: "I",

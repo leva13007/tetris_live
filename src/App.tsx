@@ -6,10 +6,26 @@ import type { GameState } from './service/type';
 import { SideBar } from './components/SideBar/SideBar';
 import { GameMessage } from './components/GameMessage/GameMessage';
 import { GameGrid } from './components/GameGrid/GameGrid';
+import { welcome } from './maps';
+import { GET_GAME_MAP, GET_WELCOME_SCREEN } from './service/constants';
 
 function App() {
   const [gameTick, setGameTick] = useState(0);
   console.log("Render App", gameTick);
+  const [mapIndex, setMapIndex] = useState(0);
+  const [gameMode, setGameMode] = useState<'settings' | 'game'>('settings');
+
+  const gameState = useRef<GameState>({
+    isGameOver: false,
+    grid: welcome[mapIndex][GET_WELCOME_SCREEN],
+    currentBrick: getRandomBrick(true),
+    nextBrick: getRandomBrick(true),
+    score: 0,
+    lines: 0,
+    level: 1,
+    isPause: false,
+    gameMsg: ""
+  });
 
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
@@ -27,20 +43,56 @@ function App() {
         }
         forceRender();
         return;
+      } else if (ev.code === 'Enter') {
+        gameState.current.grid = welcome[mapIndex][GET_GAME_MAP];
+        gameState.current.currentBrick = getRandomBrick();
+        gameState.current.nextBrick = getRandomBrick();
+        gameState.current.isGameOver = false;
+        gameState.current.isPause = false;
+        gameState.current.gameMsg = "";
+        gameState.current.score = 0;
+        gameState.current.lines = 0;
+        gameState.current.level = 1;
+        setGameMode('game');
+        loop();
+        forceRender();
+        return;
+
       }
       if (gameState.current.isPause) return;
       if (ev.code === 'ArrowLeft') {
-        gameState.current.currentBrick = moveSides({
-          grid: gameState.current.grid,
-          currentBrick: gameState.current.currentBrick,
-          dc: -1,
-        });
+        if (gameMode === 'settings') {
+          setMapIndex(prev => {
+            let newIndex = prev - 1;
+            if (newIndex < 0) newIndex = welcome.length - 1;
+            gameState.current.grid = welcome[newIndex][GET_WELCOME_SCREEN];
+            return newIndex;
+          });
+          gameState.current.grid = welcome[mapIndex][GET_WELCOME_SCREEN];
+        } else if (gameMode === 'game') {
+          gameState.current.currentBrick = moveSides({
+            grid: gameState.current.grid,
+            currentBrick: gameState.current.currentBrick,
+            dc: -1,
+          });
+        }
       } else if (ev.code === 'ArrowRight') {
-        gameState.current.currentBrick = moveSides({
-          grid: gameState.current.grid,
-          currentBrick: gameState.current.currentBrick,
-          dc: 1,
-        });
+        if (gameMode === 'settings') {
+          setMapIndex(prev => {
+            let newIndex = prev + 1;
+            if (newIndex >= welcome.length) newIndex = 0;
+            console.log("ArrowRight -> newIndex", newIndex);
+            gameState.current.grid = welcome[newIndex][GET_WELCOME_SCREEN];
+            return newIndex;
+          });
+          gameState.current.grid = welcome[mapIndex][GET_WELCOME_SCREEN];
+        } else if (gameMode === 'game') {
+          gameState.current.currentBrick = moveSides({
+            grid: gameState.current.grid,
+            currentBrick: gameState.current.currentBrick,
+            dc: 1,
+          });
+        }
       } else if (ev.code === 'ArrowDown') {
         gameState.current = tick(gameState.current);
       } else if (ev.code === 'Space') {
@@ -62,18 +114,6 @@ function App() {
     setGameTick(prev => prev + 1);
   }
 
-  const gameState = useRef<GameState>({
-    isGameOver: false,
-    grid: mockGrid,
-    currentBrick: getRandomBrick(),
-    nextBrick: getRandomBrick(),
-    score: 0,
-    lines: 0,
-    level: 1,
-    isPause: false,
-    gameMsg: ""
-  });
-
   const loop = () => {
     // console.log("Game tick");
     if (gameState.current.isGameOver || gameState.current.isPause) {
@@ -89,7 +129,7 @@ function App() {
   }
 
   useEffect(() => {
-    loop();
+    // loop();
     return () => {
       if (gameTimer) {
         clearTimeout(gameTimer);
