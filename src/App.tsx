@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
-import { grid as mockGrid } from './service/mock';
 import { getMergedGrid, getRandomBrick, moveSides, rotate, tick } from './service';
 import type { GameState } from './service/type';
 import { SideBar } from './components/SideBar/SideBar';
