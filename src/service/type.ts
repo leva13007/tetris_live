@@ -23,7 +23,10 @@ export type Tetromino = {
   rotations: Rotate[];
 }
 
-export type Row = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
+type Row1 = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
+type Row2 = [Cell, Cell, Cell, Cell,];
+
+export type Row = Row1 | Row2;
 export type Grid = [
   Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row, Row,
 ]
